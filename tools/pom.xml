@@ -11,5 +11,10 @@
   <artifactId>framework-tools</artifactId>
   <name>framework-tools</name>
   <dependencies>
+      <dependency>
+          <groupId>org.apache.shiro</groupId>
+          <artifactId>shiro-core</artifactId>
+          <version>RELEASE</version>
+      </dependency>
   </dependencies>
 </project>
