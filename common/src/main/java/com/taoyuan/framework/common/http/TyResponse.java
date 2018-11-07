@@ -6,6 +6,8 @@ import lombok.Data;
 public class TyResponse<T> {
 
     private String code;
+
     private String msg;
+
     private T data;
 }
