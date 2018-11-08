@@ -23,8 +23,8 @@ public class TyExceptionHander {
         if(e instanceof ValidateException){
             ValidateException applicationException = (ValidateException)e;
             response.setCode(String.valueOf(applicationException.getCode()));
-            response.setMsg(applicationException.getMsg());
-            response.setData(applicationException.getMessage());
+            response.setMsg(applicationException.getMessage());
+            response.setData(applicationException.getParams());
         }else if(e instanceof TyException){
             TyException frameworkException = (TyException)e;
             response.setCode(String.valueOf(frameworkException.getCode()));
