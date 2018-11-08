@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.taoyuan.framework.aaa.dao.SysRoleMapper">
+
+    <!-- 开启二级缓存 -->
+    <!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+    <select id="selectRoleByUser" parameterType="com.taoyuan.framework.aaa.entity.UserInfo" resultType="com.taoyuan.framework.aaa.entity.SysRole">
+        SELECT
+        tr.*
+        FROM
+        ty_user_role tur
+        LEFT JOIN ty_role tr ON tur.role_id = tr.id
+        WHERE
+        tur.user_id = #{id}
+    </select>
+</mapper>
