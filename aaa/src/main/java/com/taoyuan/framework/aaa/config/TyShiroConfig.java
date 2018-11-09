@@ -34,7 +34,7 @@ public class TyShiroConfig {
         filterChainDefinitionMap.put("/static/**", "anon");
 //        filterChainDefinitionMap.put("/ajaxLogin", "anon");
         filterChainDefinitionMap.put("/login", "anon");
-        filterChainDefinitionMap.put("/getpass/**", "anon");
+        filterChainDefinitionMap.put("/register", "anon");
         filterChainDefinitionMap.put("/**", "authc");
         //配置shiro默认登录界面地址，前后端分离中登录界面跳转应由前端路由控制，后台仅返回json数据
         shiroFilterFactoryBean.setLoginUrl("/unauth");
@@ -62,8 +62,9 @@ public class TyShiroConfig {
     }
 
     @Bean
-    public TyRealm myShiroRealm() {
+    public TyRealm tyShiroRealm() {
         TyRealm tyRealm = new TyRealm();
+        tyRealm.setName("tyShiroRealm");
         tyRealm.setCredentialsMatcher(hashedCredentialsMatcher());
         return tyRealm;
     }
@@ -72,7 +73,7 @@ public class TyShiroConfig {
     @Bean
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(myShiroRealm());
+        securityManager.setRealm(tyShiroRealm());
         // 自定义session管理 使用redis
         securityManager.setSessionManager(sessionManager());
         // 自定义缓存实现 使用redis

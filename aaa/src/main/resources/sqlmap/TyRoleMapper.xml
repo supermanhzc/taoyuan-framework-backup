@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.taoyuan.framework.aaa.dao.SysRoleMapper">
+<mapper namespace="com.taoyuan.framework.aaa.dao.TyRoleMapper">
 
     <!-- 开启二级缓存 -->
     <!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
 
-    <select id="selectRoleByUser" parameterType="com.taoyuan.framework.aaa.entity.UserInfo" resultType="com.taoyuan.framework.aaa.entity.SysRole">
+    <select id="selectRoleByUser" parameterType="com.taoyuan.framework.aaa.entity.UserInfo" resultType="com.taoyuan.framework.aaa.entity.TyRole">
         SELECT
         tr.*
         FROM
