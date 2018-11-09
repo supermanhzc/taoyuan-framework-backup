@@ -64,7 +64,13 @@ public class TyAuthController {
         userInfo.setPassword(newPassword);
         userInfo.setCreateTime(currentDate);
         userInfo.setStatus(UserConsts.INIT.ordinal());
-        userInfo.setCreateUser(TySession.getCurrentUser().getUserId());
+
+        TyUserRolePermission currentUser = TySession.getCurrentUser();
+        if (currentUser == null){
+            userInfo.setCreateUser(0l);
+        }else{
+            userInfo.setCreateUser(currentUser.getUserId());
+        }
         boolean result = userService.saveOrUpdate(userInfo);
         return new TySuccessResponse(result);
     }

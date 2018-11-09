@@ -8,7 +8,7 @@ import org.apache.shiro.subject.Subject;
 public class TySession {
     public static TyUserRolePermission getCurrentUser(){
         Subject subject = SecurityUtils.getSubject();
-        if(subject != null && subject.getSession() != null && subject.getSession().getId() != null){
+        if (subject.isAuthenticated()){
             return (TyUserRolePermission) subject.getSession().getAttribute(subject.getSession().getId().toString());
         }
         return null;
