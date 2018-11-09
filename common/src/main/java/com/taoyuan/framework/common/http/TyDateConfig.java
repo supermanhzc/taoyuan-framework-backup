@@ -17,7 +17,6 @@ public class TyDateConfig {
 
     @Bean
     public MappingJackson2HttpMessageConverter MappingJsonpHttpMessageConverter() {
-
         ObjectMapper mapper = jackson2ObjectMapperBuilder.build();
 
         // ObjectMapper为了保障线程安全性，里面的配置类都是一个不可变的对象
