@@ -1,4 +1,4 @@
-package com.taoyuan.framework.aaa.entity;
+package com.taoyuan.framework.common.entity;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class FullUserInfo implements Serializable{
+public class TyUserRolePermission extends BaseEntity{
 
     private String sessionId;
     private Long userId;
@@ -17,7 +17,7 @@ public class FullUserInfo implements Serializable{
     private List<TyRole> roles;
     private List<TyPermission> permissions;
 
-    public FullUserInfo(String sessionId, UserInfo user, List<TyRole> roles, List<TyPermission> permissions){
+    public TyUserRolePermission(String sessionId, TyUser user, List<TyRole> roles, List<TyPermission> permissions){
         this.setSessionId(sessionId);
         this.setUserId(user.getId());
         this.setUserName(user.getUsername());
@@ -28,3 +28,4 @@ public class FullUserInfo implements Serializable{
         this.setStatus(user.getStatus());
     }
 }
+

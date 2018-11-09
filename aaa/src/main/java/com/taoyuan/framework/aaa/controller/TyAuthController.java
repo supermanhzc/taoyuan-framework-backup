@@ -3,24 +3,24 @@ package com.taoyuan.framework.aaa.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.taoyuan.framework.aaa.config.TyRealm;
-import com.taoyuan.framework.aaa.entity.FullUserInfo;
-import com.taoyuan.framework.aaa.entity.TyPermission;
-import com.taoyuan.framework.aaa.entity.TyRole;
-import com.taoyuan.framework.aaa.entity.UserInfo;
+import com.taoyuan.framework.common.entity.TyPermission;
+import com.taoyuan.framework.common.entity.TyRole;
+import com.taoyuan.framework.common.entity.TyUser;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
-import com.taoyuan.framework.aaa.service.UserInfoService;
+import com.taoyuan.framework.aaa.service.TyUserService;
 import com.taoyuan.framework.common.constant.ResultCode;
 import com.taoyuan.framework.common.constant.UserConsts;
+import com.taoyuan.framework.common.entity.TyUserRolePermission;
 import com.taoyuan.framework.common.exception.TyExceptionUtil;
 import com.taoyuan.framework.common.http.TyResponse;
+import com.taoyuan.framework.common.http.TySession;
 import com.taoyuan.framework.common.http.TySuccessResponse;
 import com.taoyuan.framework.common.util.TyDateUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
@@ -34,7 +34,7 @@ import java.util.List;
 public class TyAuthController {
 
     @Autowired
-    private UserInfoService userInfoService;
+    private TyUserService userService;
 
     @Autowired
     private TyRoleService roleService;
@@ -46,7 +46,7 @@ public class TyAuthController {
     private HashedCredentialsMatcher hashedCredentialsMatcher;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public TyResponse register(@RequestBody UserInfo userInfo){
+    public TyResponse register(@RequestBody TyUser userInfo){
         TyRealm realm = new TyRealm();
 
         Date currentDate = new Date();
@@ -59,17 +59,18 @@ public class TyAuthController {
 
         String newPassword = new SimpleHash(hashedCredentialsMatcher.getHashAlgorithmName(), authenticationInfo.getCredentials(),
                 ByteSource.Util.bytes(authenticationInfo.getCredentialsSalt()), hashedCredentialsMatcher.getHashIterations()).toHex();
-        Subject subject = SecurityUtils.getSubject();
+
 
         userInfo.setPassword(newPassword);
         userInfo.setCreateTime(currentDate);
         userInfo.setStatus(UserConsts.INIT.ordinal());
-        boolean result = userInfoService.saveOrUpdate(userInfo);
+        userInfo.setCreateUser(TySession.getCurrentUser().getUserId());
+        boolean result = userService.saveOrUpdate(userInfo);
         return new TySuccessResponse(result);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public TyResponse<UserInfo> login(@RequestBody UserInfo userInfo){
+    public TyResponse<TyUserRolePermission> login(@RequestBody TyUser userInfo){
         JSONObject jsonObject = new JSONObject();
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(userInfo.getUsername(), userInfo.getPassword());
@@ -77,11 +78,11 @@ public class TyAuthController {
         try {
             subject.login(token);
             String sessionId = subject.getSession().getId().toString();
-            UserInfo user = userInfoService.getOne(new QueryWrapper<UserInfo>().eq("username",userInfo.getUsername()));
+            TyUser user = userService.getOne(new QueryWrapper<TyUser>().eq("username",userInfo.getUsername()));
             List<TyRole> roles = roleService.selectRoleByUser(user);
             List<TyPermission> permissions = permissionService.selectPermByUser(user);
 
-            FullUserInfo fullUser = new FullUserInfo(sessionId, user, roles, permissions);
+            TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions);
             subject.getSession().setAttribute(sessionId, fullUser);
             return new TySuccessResponse(fullUser);
         } catch (LockedAccountException e) {

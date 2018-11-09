@@ -1,4 +1,4 @@
-package com.taoyuan.framework.aaa.entity;
+package com.taoyuan.framework.common.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Data
 @TableName(value = "ty_user")
-public class UserInfo implements Serializable {
+public class TyUser implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String username;
@@ -21,4 +21,6 @@ public class UserInfo implements Serializable {
     private Integer status;
     @TableField(value = "create_time")
     private Date createTime;
+    @TableField(value="create_user")
+    private Long createUser;
 }

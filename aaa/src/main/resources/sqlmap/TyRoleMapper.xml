@@ -5,7 +5,7 @@
     <!-- 开启二级缓存 -->
     <!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
 
-    <select id="selectRoleByUser" parameterType="com.taoyuan.framework.aaa.entity.UserInfo" resultType="com.taoyuan.framework.aaa.entity.TyRole">
+    <select id="selectRoleByUser" parameterType="com.taoyuan.framework.common.entity.TyUser" resultType="com.taoyuan.framework.common.entity.TyRole">
         SELECT
         tr.*
         FROM

@@ -1,14 +1,13 @@
 package com.taoyuan.framework.aaa.config;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.taoyuan.framework.aaa.entity.TyPermission;
-import com.taoyuan.framework.aaa.entity.TyRole;
-import com.taoyuan.framework.aaa.entity.UserInfo;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
-import com.taoyuan.framework.aaa.service.UserInfoService;
+import com.taoyuan.framework.aaa.service.TyUserService;
 import com.taoyuan.framework.common.constant.UserConsts;
-import com.taoyuan.framework.common.http.TyDateFormat;
+import com.taoyuan.framework.common.entity.TyPermission;
+import com.taoyuan.framework.common.entity.TyRole;
+import com.taoyuan.framework.common.entity.TyUser;
 import com.taoyuan.framework.common.util.TyDateUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -23,25 +22,25 @@ import java.util.List;
 public class TyRealm extends AuthorizingRealm {
 
     @Resource
-    private TyRoleService TyRoleService;
+    private TyRoleService roleService;
 
     @Resource
-    private TyPermissionService TyPermissionService;
+    private TyPermissionService permissionService;
 
     @Resource
-    private UserInfoService userInfoService;
+    private TyUserService userService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 //        Tytem.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        UserInfo userInfo = (UserInfo) principals.getPrimaryPrincipal();
+        TyUser userInfo = (TyUser) principals.getPrimaryPrincipal();
         try {
-            List<TyRole> roles = TyRoleService.selectRoleByUser(userInfo);
+            List<TyRole> roles = roleService.selectRoleByUser(userInfo);
             for (TyRole role : roles) {
                 authorizationInfo.addRole(role.getName());
             }
-            List<TyPermission> TyPermissions = TyPermissionService.selectPermByUser(userInfo);
+            List<TyPermission> TyPermissions = permissionService.selectPermByUser(userInfo);
             for (TyPermission perm : TyPermissions) {
                 authorizationInfo.addStringPermission(perm.getPermission());
             }
@@ -60,7 +59,7 @@ public class TyRealm extends AuthorizingRealm {
 //        Tytem.out.println(token.getCredentials());
         //通过username从数据库中查找 User对象，如果找到，没找到.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        UserInfo userInfo = userInfoService.getOne(new QueryWrapper<UserInfo>().eq("username",username));
+        TyUser userInfo = userService.getOne(new QueryWrapper<TyUser>().eq("username",username));
 //        Tytem.out.println("----->>userInfo="+userInfo);
         if (userInfo == null) {
             throw new AuthenticationException();

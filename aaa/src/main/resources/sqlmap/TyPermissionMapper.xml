@@ -5,7 +5,7 @@
     <!-- 开启二级缓存 -->
     <!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
 
-    <select id="selectPermByUser" parameterType="com.taoyuan.framework.aaa.entity.UserInfo" resultType="com.taoyuan.framework.aaa.entity.TyPermission">
+    <select id="selectPermByUser" parameterType="com.taoyuan.framework.common.entity.TyUser" resultType="com.taoyuan.framework.common.entity.TyPermission">
         SELECT
         tp.*
         FROM
