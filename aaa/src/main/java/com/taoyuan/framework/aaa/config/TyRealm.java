@@ -1,12 +1,14 @@
 package com.taoyuan.framework.aaa.config;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.taoyuan.framework.aaa.entity.SysPermission;
-import com.taoyuan.framework.aaa.entity.SysRole;
-import com.taoyuan.framework.aaa.entity.UserInfo;
-import com.taoyuan.framework.aaa.service.SysPermissionService;
-import com.taoyuan.framework.aaa.service.SysRoleService;
-import com.taoyuan.framework.aaa.service.UserInfoService;
+import com.taoyuan.framework.aaa.service.TyPermissionService;
+import com.taoyuan.framework.aaa.service.TyRoleService;
+import com.taoyuan.framework.aaa.service.TyUserService;
+import com.taoyuan.framework.common.constant.UserConsts;
+import com.taoyuan.framework.common.entity.TyPermission;
+import com.taoyuan.framework.common.entity.TyRole;
+import com.taoyuan.framework.common.entity.TyUser;
+import com.taoyuan.framework.common.util.TyDateUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -20,26 +22,26 @@ import java.util.List;
 public class TyRealm extends AuthorizingRealm {
 
     @Resource
-    private SysRoleService sysRoleService;
+    private TyRoleService roleService;
 
     @Resource
-    private SysPermissionService sysPermissionService;
+    private TyPermissionService permissionService;
 
     @Resource
-    private UserInfoService userInfoService;
+    private TyUserService userService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-//        System.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
+//        Tytem.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        UserInfo userInfo = (UserInfo) principals.getPrimaryPrincipal();
+        TyUser userInfo = (TyUser) principals.getPrimaryPrincipal();
         try {
-            List<SysRole> roles = sysRoleService.selectRoleByUser(userInfo);
-            for (SysRole role : roles) {
+            List<TyRole> roles = roleService.selectRoleByUser(userInfo);
+            for (TyRole role : roles) {
                 authorizationInfo.addRole(role.getName());
             }
-            List<SysPermission> sysPermissions = sysPermissionService.selectPermByUser(userInfo);
-            for (SysPermission perm : sysPermissions) {
+            List<TyPermission> TyPermissions = permissionService.selectPermByUser(userInfo);
+            for (TyPermission perm : TyPermissions) {
                 authorizationInfo.addStringPermission(perm.getPermission());
             }
         } catch (Exception e) {
@@ -54,21 +56,21 @@ public class TyRealm extends AuthorizingRealm {
             throws AuthenticationException {
         //获取用户的输入的账号.
         String username = (String) token.getPrincipal();
-//        System.out.println(token.getCredentials());
+//        Tytem.out.println(token.getCredentials());
         //通过username从数据库中查找 User对象，如果找到，没找到.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        UserInfo userInfo = userInfoService.getOne(new QueryWrapper<UserInfo>().eq("username",username));
-//        System.out.println("----->>userInfo="+userInfo);
+        TyUser userInfo = userService.getOne(new QueryWrapper<TyUser>().eq("username",username));
+//        Tytem.out.println("----->>userInfo="+userInfo);
         if (userInfo == null) {
-            return null;
+            throw new AuthenticationException();
         }
-        if (userInfo.getStatus() == 1) { //账户冻结
+        if (userInfo.getStatus() == UserConsts.LOCKED.ordinal()) { //账户冻结
             throw new LockedAccountException();
         }
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfo, //用户名
+                userInfo.getUsername(), //用户名
                 userInfo.getPassword(), //密码
-                ByteSource.Util.bytes(userInfo.getSalt()),//salt=username+salt
+                ByteSource.Util.bytes(TyDateUtils.convertDateToString(userInfo.getCreateTime())),//salt=username+salt
                 getName()  //realm name
         );
         return authenticationInfo;
