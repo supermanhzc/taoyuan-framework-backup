@@ -108,6 +108,6 @@ public class TyAuthController {
 
     @RequestMapping(value = "/unauth", method = RequestMethod.GET)
     public void unauth() {
-        TyExceptionUtil.buildException(ResultCode.USER_NOT_LOGGED_IN);
+        throw TyExceptionUtil.buildException(ResultCode.USER_NOT_LOGGED_IN);
     }
 }
