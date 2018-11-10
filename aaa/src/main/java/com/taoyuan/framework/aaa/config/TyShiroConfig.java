@@ -1,13 +1,16 @@
 package com.taoyuan.framework.aaa.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.util.CollectionUtils;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +20,33 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Configuration
+@Slf4j
 public class TyShiroConfig {
 
+    @Autowired
+    private TyAuthProps authProps;
+
+    private void addCustomerAuthConfig(Map<String, String> filterChainDefinitionMap){
+        if(null != authProps){
+            if(!CollectionUtils.isEmpty(authProps.getUnAuthUrls())){
+                for (String unAuthUrl: authProps.getUnAuthUrls()) {
+                    filterChainDefinitionMap.put(unAuthUrl, "anon");
+                }
+            }
+
+            if(!CollectionUtils.isEmpty(authProps.getPermissions())){
+                for (String permission: authProps.getPermissions()) {
+                    String[] perms = permission.split("=");
+                    if (perms.length !=  2){
+                        log.error("permission[{}] format error, need key=value.", permission);
+                        continue;
+                    }
+
+                    filterChainDefinitionMap.put(perms[0].trim(), perms[1].trim());
+                }
+            }
+        }
+    }
     @Bean
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
 //        System.out.println("ShiroConfiguration.shirFilter()");
@@ -35,7 +63,11 @@ public class TyShiroConfig {
 //        filterChainDefinitionMap.put("/ajaxLogin", "anon");
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/register", "anon");
+
+        this.addCustomerAuthConfig(filterChainDefinitionMap);
+
         filterChainDefinitionMap.put("/**", "authc");
+        log.info("auth filter map is {}", filterChainDefinitionMap);
         //配置shiro默认登录界面地址，前后端分离中登录界面跳转应由前端路由控制，后台仅返回json数据
         shiroFilterFactoryBean.setLoginUrl("/unauth");
         // 登录成功后要跳转的链接
