@@ -12,6 +12,7 @@
         ty_role_permission trp
         LEFT JOIN ty_permission tp ON trp.permission_id = tp.id
         WHERE
+        tp.resource_type = 'action' AND
         trp.role_id IN (
         SELECT
         role_id
