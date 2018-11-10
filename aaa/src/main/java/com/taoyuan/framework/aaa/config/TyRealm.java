@@ -34,8 +34,9 @@ public class TyRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 //        Tytem.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        TyUser userInfo = (TyUser) principals.getPrimaryPrincipal();
+        String username = (String) principals.getPrimaryPrincipal();
         try {
+            TyUser userInfo = userService.getOne(new QueryWrapper<TyUser>().eq("username",username));
             List<TyRole> roles = roleService.selectRoleByUser(userInfo);
             for (TyRole role : roles) {
                 authorizationInfo.addRole(role.getName());
