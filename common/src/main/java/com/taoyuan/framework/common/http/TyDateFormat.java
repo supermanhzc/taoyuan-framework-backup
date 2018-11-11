@@ -27,11 +27,13 @@ public class TyDateFormat extends DateFormat {
 
     @Override
     public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
+        log.info("TyDateFormat format,input {}",date);
         return new StringBuffer(format.format(date));
     }
 
     @Override
     public Date parse(String source, ParsePosition pos) {
+        log.info("TyDateFormat parse(String source, ParsePosition pos),input {}",source);
         Date date = null;
         try {
             format.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
@@ -45,6 +47,7 @@ public class TyDateFormat extends DateFormat {
     // 主要还是装饰这个方法
     @Override
     public Date parse(String source) throws ParseException {
+        log.info("TyDateFormat parse(String source),input {}",source);
         Date date = null;
         try {
             format.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
