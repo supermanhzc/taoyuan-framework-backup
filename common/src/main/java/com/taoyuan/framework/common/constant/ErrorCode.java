@@ -1,6 +1,6 @@
 package com.taoyuan.framework.common.constant;
 
-public enum ResultCode {
+public enum ErrorCode {
 
     /* 失败状态码 */
     UNKONW(-1, "未知"),
@@ -66,16 +66,16 @@ public enum ResultCode {
         this.msg = msg;
     }
 
-    private ResultCode(Integer code, String msg) {
+    private ErrorCode(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    private ResultCode(Integer code) {
+    private ErrorCode(Integer code) {
         this.code = code;
     }
 
-    private ResultCode(String msg) {
+    private ErrorCode(String msg) {
         this.msg = msg;
     }
 }
