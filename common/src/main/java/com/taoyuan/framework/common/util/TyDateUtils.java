@@ -28,15 +28,14 @@ public class TyDateUtils {
     }
 
     /**
-     * 获取N秒之后的时间
+     * 获取amount*unit秒之后的时间
+     * @param unit
      * @param amount
      * @return
      */
-    public static Date getDate(int amount){
-        Date now = new Date();
-
+    public static Date getDate(int unit,int amount){
         Calendar nowTime = Calendar.getInstance();
-        nowTime.add(Calendar.SECOND, amount);
+        nowTime.add(unit, amount);
         return nowTime.getTime();
     }
 
@@ -45,25 +44,37 @@ public class TyDateUtils {
      * @param amount
      * @return
      */
-    public static String getDateAfterSeconds(int amount){
-        SimpleDateFormat sdf = new SimpleDateFormat(DateConsts.DEFAULT_DATE_FORMAT);
-        return sdf.format(getDate(amount));
+    public static Date getDateAfterSeconds(int amount){
+        return getDate(Calendar.SECOND,amount);
+    }
+
+    public static Date getDateAfterMinutes(int amount){
+        return getDate(Calendar.MINUTE,amount);
     }
 
     /**
      * 获取cron格式的时间
-     * @param interval
+     * @param amount
      * @return
      */
-    public static String getCronAfterSeconds(int interval){
-        SimpleDateFormat sdf = new SimpleDateFormat(DateConsts.DEFAULT_DATE_FORMAT);
-        Date now = new Date();
-
-        Calendar nowTime = Calendar.getInstance();
-        nowTime.add(Calendar.SECOND, 5);
-        return sdf.format(nowTime.getTime());
+    public static String getCronAfterSeconds(int amount){
+        return convertDateToCron(getDateAfterSeconds(amount));
     }
 
+    /**
+     * 转换日期为cron格式
+     * @param amount
+     * @return
+     */
+    public static String getCronAfterMinutes(int amount){
+        return convertDateToCron(getDateAfterMinutes(amount));
+    }
+
+    /**
+     * 转换日期为cron格式
+     * @param date
+     * @return
+     */
     public static String convertDateToCron(Date date) {
         if (null == date) {
             return null;
