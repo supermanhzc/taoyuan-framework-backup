@@ -3,33 +3,42 @@ package com.taoyuan.framework.aaa.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.taoyuan.framework.aaa.config.TyRealm;
-import com.taoyuan.framework.common.entity.TyPermission;
-import com.taoyuan.framework.common.entity.TyRole;
-import com.taoyuan.framework.common.entity.TyUser;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
+import com.taoyuan.framework.aaa.service.TyUserLoginService;
 import com.taoyuan.framework.aaa.service.TyUserService;
 import com.taoyuan.framework.common.constant.ResultCode;
 import com.taoyuan.framework.common.constant.UserConsts;
-import com.taoyuan.framework.common.entity.TyUserRolePermission;
+import com.taoyuan.framework.common.entity.*;
 import com.taoyuan.framework.common.exception.TyExceptionUtil;
 import com.taoyuan.framework.common.http.TyResponse;
 import com.taoyuan.framework.common.http.TySession;
 import com.taoyuan.framework.common.http.TySuccessResponse;
 import com.taoyuan.framework.common.util.TyDateUtils;
+import com.taoyuan.framework.common.util.TyIpUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.LockedAccountException;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class TyAuthController {
 
@@ -45,8 +54,11 @@ public class TyAuthController {
     @Autowired
     private HashedCredentialsMatcher hashedCredentialsMatcher;
 
+    @Autowired
+    private TyUserLoginService userLoginService;
+
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public TyResponse register(@RequestBody TyUser userInfo){
+    public TyResponse register(@RequestBody TyUser userInfo) {
         TyRealm realm = new TyRealm();
 
         Date currentDate = new Date();
@@ -57,8 +69,10 @@ public class TyAuthController {
                 realm.getName()  //realm name
         );
 
-        String newPassword = new SimpleHash(hashedCredentialsMatcher.getHashAlgorithmName(), authenticationInfo.getCredentials(),
-                ByteSource.Util.bytes(authenticationInfo.getCredentialsSalt()), hashedCredentialsMatcher.getHashIterations()).toHex();
+        String newPassword = new SimpleHash(hashedCredentialsMatcher.getHashAlgorithmName(),
+                authenticationInfo.getCredentials(),
+                ByteSource.Util.bytes(authenticationInfo.getCredentialsSalt()),
+                hashedCredentialsMatcher.getHashIterations()).toHex();
 
 
         userInfo.setPassword(newPassword);
@@ -66,9 +80,9 @@ public class TyAuthController {
         userInfo.setStatus(UserConsts.INIT.ordinal());
 
         TyUserRolePermission currentUser = TySession.getCurrentUser();
-        if (currentUser == null){
+        if (currentUser == null) {
             userInfo.setCreateUser(0l);
-        }else{
+        } else {
             userInfo.setCreateUser(currentUser.getUserId());
         }
         boolean result = userService.saveOrUpdate(userInfo);
@@ -76,26 +90,44 @@ public class TyAuthController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public TyResponse<TyUserRolePermission> login(@RequestBody TyUser userInfo){
+    public TyResponse<TyUserRolePermission> login(@RequestBody TyUser userInfo) {
         JSONObject jsonObject = new JSONObject();
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(userInfo.getUsername(), userInfo.getPassword());
 
+        TyUserLoginEntity userLogin = new TyUserLoginEntity();
         try {
             subject.login(token);
             String sessionId = subject.getSession().getId().toString();
-            TyUser user = userService.getOne(new QueryWrapper<TyUser>().eq("username",userInfo.getUsername()));
+            TyUser user = userService.getOne(new QueryWrapper<TyUser>().eq("username", userInfo.getUsername()));
+
             List<TyRole> roles = roleService.selectRoleByUser(user);
             List<TyPermission> permissions = permissionService.selectPermByUser(user);
 
             TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions);
             subject.getSession().setAttribute(sessionId, fullUser);
+            HttpServletRequest request =
+                    ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            userLogin.setMemberId(user.getId());
+            userLogin.setMemberNickName(userInfo.getUsername());
+            String ip = TyIpUtil.getIpAddr(request);
+            userLogin.setIp(ip);
+            userLogin.setAddr(TyIpUtil.getAddressByIp(ip));
+            userLogin.setType(getUseerType(fullUser.getRoles().get(0)));
+            userLogin.setStatus(1);
+            userLoginService.saveOrUpdate(userLogin);
             return new TySuccessResponse(fullUser);
         } catch (LockedAccountException e) {
+            userLogin.setStatus(0);
+            userLoginService.saveOrUpdate(userLogin);
             throw TyExceptionUtil.buildException(ResultCode.USER_ACCOUNT_FORBIDDEN);
         } catch (ShiroException e) {
+            userLogin.setStatus(0);
+            userLoginService.saveOrUpdate(userLogin);
             throw TyExceptionUtil.buildException(ResultCode.USER_LOGIN_ERROR);
         } catch (Exception e) {
+            userLogin.setStatus(0);
+            userLoginService.saveOrUpdate(userLogin);
             throw TyExceptionUtil.buildException(ResultCode.FAIL.getCode(), e.getMessage());
         }
     }
@@ -109,5 +141,22 @@ public class TyAuthController {
     @RequestMapping(value = "/unauth", method = RequestMethod.GET)
     public void unauth() {
         throw TyExceptionUtil.buildException(ResultCode.USER_NOT_LOGGED_IN);
+    }
+
+    private int getUseerType(TyRole role) {
+        String name = role.getName();
+        if ("超级管理员".equals(name)) {
+            return 1;
+        } else if ("网站管理员".equals(name)) {
+            return 2;
+        } else if ("代理会员".equals(name)) {
+            return 3;
+        } else if ("钻石会员".equals(name)) {
+            return 4;
+        } else if ("普通会员".equals(name)) {
+            return 5;
+        }
+
+        return 0;
     }
 }
