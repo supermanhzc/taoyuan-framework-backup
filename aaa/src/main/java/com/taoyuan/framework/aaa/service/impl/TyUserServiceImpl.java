@@ -10,4 +10,8 @@ import org.springframework.stereotype.Service;
 public class TyUserServiceImpl extends ServiceImpl<UserInfoMapper, TyUser> implements TyUserService {
 
 
+    @Override
+    public TyUser getUserByName(String name) {
+        return null;
+    }
 }
