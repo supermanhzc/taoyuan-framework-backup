@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
+/**
+ * 随机数工具类
+ */
 @Slf4j
 public class TyRandomUtil {
 
@@ -30,5 +33,20 @@ public class TyRandomUtil {
 
         log.info("验证码:{}", str.toString());
         return str.toString();
+    }
+
+    /**
+     * 获取任意位数的数字序列
+     * @param unit
+     * @return
+     */
+    public static String getRandomNum(int unit) {
+        Random rand = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int a = 0; a < unit; a++) {
+            sb.append(rand.nextInt(10));
+        }
+
+        return sb.toString();
     }
 }
