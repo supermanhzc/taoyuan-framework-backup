@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
+import static com.taoyuan.framework.common.constant.ErrorCode.USER_NOT_LOGGED_IN;
+
 @Slf4j
 @RestController
 public class TyAuthController {
@@ -143,6 +145,17 @@ public class TyAuthController {
         throw TyExceptionUtil.buildException(ResultCode.USER_NOT_LOGGED_IN);
     }
 
+    @RequestMapping(value = "/heartbeat", method = RequestMethod.POST)
+    public TyResponse<String> heartbeat(){
+        TyUserRolePermission currentUser = TySession.getCurrentUser();
+        if (null != currentUser) {
+            return new TySuccessResponse("heartbeat successfully.");
+        }else{
+            throw TyExceptionUtil.buildException(ResultCode.USER_NOT_LOGGED_IN);
+        }
+
+
+    }
     private int getUseerType(TyRole role) {
         String name = role.getName();
         if ("超级管理员".equals(name)) {

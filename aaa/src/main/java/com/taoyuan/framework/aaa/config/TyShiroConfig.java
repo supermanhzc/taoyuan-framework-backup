@@ -117,6 +117,7 @@ public class TyShiroConfig {
     @Bean
     public SessionManager sessionManager() {
         TySessionManager sessionManager = new TySessionManager();
+        sessionManager.setSessionIdUrlRewritingEnabled(false);
         sessionManager.setSessionDAO(redisSessionDAO());
         return sessionManager;
     }
