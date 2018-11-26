@@ -27,7 +27,7 @@ public class TyVerificationCode implements Serializable {
     private String dest;
 
     //类型:注册,找回密码,兑奖
-    private String type;
+    private int type;
 
     //验证码
     private String vCode;

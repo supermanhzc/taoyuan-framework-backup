@@ -36,7 +36,11 @@ public class TyVerificationCodeController {
     public TyResponse getMailVerificationCode(@RequestBody TyVerificationCode tyVerificationCode) {
         String dest = tyVerificationCode.getDest();
         if (StringUtils.isEmpty(dest)) {
-            throw new ValidateException(1000003, "手机号码不能为空。");
+            throw new ValidateException("手机号码不能为空。");
+        }
+        int type = tyVerificationCode.getType();
+        if (type != 1 && type != 2 && type != 3) {
+            throw new ValidateException("type非法[1:注册，2:找回密码，3:兑奖]。");
         }
 
         AppConfig config = ConfigLoader.load(ConfigLoader.ConfigType.Message);
@@ -55,10 +59,6 @@ public class TyVerificationCodeController {
             tyVerificationCode.setInfName("短信");
         }
 
-        if (StringUtils.isEmpty(tyVerificationCode.getType())) {
-            //默认为注册
-            tyVerificationCode.setType("注册");
-        }
         verificationCodeService.saveOrUpdate(tyVerificationCode);
         return new TySuccessResponse(true);
     }
@@ -70,9 +70,9 @@ public class TyVerificationCodeController {
             throw new ValidateException("手机号码不能为空。");
         }
 
-        String type = tyVerificationCode.getType();
-        if (StringUtils.isEmpty(type)) {
-            throw new ValidateException("类型不能为空:[注册、兑奖、找回密码]");
+        int type = tyVerificationCode.getType();
+        if (type != 1 && type != 2 && type != 3) {
+            throw new ValidateException("type非法[1:注册，2:找回密码，3:兑奖]。");
         }
 
         Date date = TyDateUtils.getDateAfterMinutes(-1);
@@ -81,7 +81,7 @@ public class TyVerificationCodeController {
         wrapper.lambda().eq(TyVerificationCode::getDest, dest).eq(TyVerificationCode::getType, type).eq(TyVerificationCode::getVCode, tyVerificationCode.getVCode()).between(TyVerificationCode::getTime, date, Calendar.getInstance().getTime());
 
         List<TyVerificationCode> vCodeList = verificationCodeService.list(wrapper);
-        if(CollectionUtils.isEmpty(vCodeList)){
+        if (CollectionUtils.isEmpty(vCodeList)) {
             throw new ValidateException("验证码错误。");
         }
 
