@@ -6,4 +6,6 @@ import com.taoyuan.framework.common.entity.TyUser;
 public interface TyUserService extends IService<TyUser> {
 
     TyUser getUserByName(String name);
+
+    TyUser getUserById(Long id);
 }
