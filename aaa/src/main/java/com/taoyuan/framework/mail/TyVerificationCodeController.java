@@ -65,21 +65,16 @@ public class TyVerificationCodeController {
 
     @RequestMapping(value = "/verificationcode/validate", method = RequestMethod.POST)
     public TyResponse validateVerificationCode(@RequestBody TyVerificationCode tyVerificationCode) {
+        log.info("input is {}", tyVerificationCode);
         String dest = tyVerificationCode.getDest();
         if (StringUtils.isEmpty(dest)) {
             throw new ValidateException("手机号码不能为空。");
         }
 
-        int type = tyVerificationCode.getType();
-        if (type != 1 && type != 2 && type != 3) {
-            throw new ValidateException("type非法[1:注册，2:找回密码，3:兑奖]。");
-        }
-
         Date date = TyDateUtils.getDateAfterMinutes(-1);
-
         QueryWrapper<TyVerificationCode> wrapper = new QueryWrapper<TyVerificationCode>();
-        wrapper.lambda().eq(TyVerificationCode::getDest, dest).eq(TyVerificationCode::getType, type).eq(TyVerificationCode::getVCode, tyVerificationCode.getVCode()).between(TyVerificationCode::getTime, date, Calendar.getInstance().getTime());
-
+        wrapper.lambda().between(TyVerificationCode::getTime, date,
+                Calendar.getInstance().getTime()).eq(TyVerificationCode::getDest, dest).eq(TyVerificationCode::getVCode, tyVerificationCode.getVCode());
         List<TyVerificationCode> vCodeList = verificationCodeService.list(wrapper);
         if (CollectionUtils.isEmpty(vCodeList)) {
             throw new ValidateException("验证码错误。");
