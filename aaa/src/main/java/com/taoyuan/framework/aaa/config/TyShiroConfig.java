@@ -63,6 +63,7 @@ public class TyShiroConfig {
 //        filterChainDefinitionMap.put("/ajaxLogin", "anon");
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/register", "anon");
+        filterChainDefinitionMap.put("/verificationcode/**", "anon");
 
         this.addCustomerAuthConfig(filterChainDefinitionMap);
 
