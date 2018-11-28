@@ -16,6 +16,7 @@ import com.taoyuan.framework.common.http.TySession;
 import com.taoyuan.framework.common.http.TySuccessResponse;
 import com.taoyuan.framework.common.util.TyDateUtils;
 import com.taoyuan.framework.common.util.TyIpUtil;
+import com.taoyuan.framework.oper.IProxyOperService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
@@ -35,6 +36,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +60,9 @@ public class TyAuthController {
 
     @Autowired
     private TyUserLoginService userLoginService;
+
+    @Autowired
+    private IProxyOperService proxyOperService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public TyResponse register(@RequestBody TyUser userInfo) {
@@ -171,5 +176,21 @@ public class TyAuthController {
         }
 
         return 0;
+    }
+
+    //只记录代理的操作日志，其他不记录
+    private void saveOperation(int type, String ip) {
+        if (2 == type) {
+            TyProxyOperation oper = new TyProxyOperation();
+            //TODO真实数据，暂时写0
+            oper.setAccount(BigDecimal.ZERO);
+            oper.setDescription("登录");
+            oper.setType(4);
+            oper.setMoneyChanged(BigDecimal.ZERO);
+            oper.setProxyId(TySession.getCurrentUser().getUserId());
+            oper.setProxyName(TySession.getCurrentUser().getName());
+            oper.setDescription(ip);
+            proxyOperService.save(oper);
+        }
     }
 }
