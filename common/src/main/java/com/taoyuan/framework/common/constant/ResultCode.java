@@ -23,6 +23,9 @@ public enum ResultCode {
     USER_ACCOUNT_FORBIDDEN(200003, "账号已被禁用"),
     USER_NOT_EXIST(200004, "用户不存在"),
     USER_HAS_EXISTED(200005, "用户已存在"),
+    USER_REGISTRY_ERROR(200006, "用户注册失败"),
+    USER_UPDATE_ERROR(200007, "用户更新失败"),
+    USER_REMOVE_ERROR(200008, "用户删除失败"),
 
     /* 业务错误：300001-399999 */
     SPECIFIED_QUESTIONED_USER_NOT_EXIST(300001, "某业务出现问题"),
