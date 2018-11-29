@@ -28,10 +28,7 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -141,6 +138,28 @@ public class TyAuthController {
             userLoginService.saveOrUpdate(userLogin);
             throw TyExceptionUtil.buildException(ResultCode.FAIL.getCode(), e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/modify/{id}", method = RequestMethod.POST)
+    public TyResponse modify(@RequestBody TyUser userInfo){
+        TyUserRolePermission currentUser = TySession.getCurrentUser();
+        if (null != currentUser) {
+            userInfo.setUpdateUser(currentUser.getUserId());
+        }
+        if(userService.updateById(userInfo)){
+            return new TySuccessResponse("user update successful");
+        }
+        throw TyExceptionUtil.buildException(ResultCode.USER_UPDATE_ERROR);
+    }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
+    public TyResponse delete(@PathVariable("id") Long id){
+        TyUser user = userService.getById(id);
+        if(null != user){
+            user.setStatus(UserConsts.DELETED.ordinal());
+            return this.modify(user);
+        }
+        throw TyExceptionUtil.buildException(ResultCode.USER_REMOVE_ERROR);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)

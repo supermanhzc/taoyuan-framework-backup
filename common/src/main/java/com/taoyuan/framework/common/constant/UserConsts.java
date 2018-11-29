@@ -5,5 +5,6 @@ public enum UserConsts {
     INIT,
     NORMAL,
     LOCKED,
-    EXPIRE
+    EXPIRE,
+    DELETED
 }

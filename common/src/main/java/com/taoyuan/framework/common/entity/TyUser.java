@@ -26,4 +26,6 @@ public class TyUser implements Serializable {
     private Date createTime;
     @TableField(value="create_user")
     private Long createUser;
+    @TableField(value = "update_user")
+    private Long updateUser;
 }
