@@ -95,7 +95,7 @@ public class TyExceptionHander {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public TyResponse processException(HttpServletRequest requset, Exception e) {
-        log.error("Exception happend. reason is {}", e.getMessage());
+        log.error("Exception happend. reason is {}", e);
         log.error("Exception happend. type is {}", e.getClass());
         TyResponse response = new TyResponse();
         response.setCode(String.valueOf(ResultCode.UNKONW.getCode()));
