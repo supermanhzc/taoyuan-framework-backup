@@ -22,7 +22,7 @@ public class TyExceptionHander {
     @ExceptionHandler(value = {ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public TyResponse constraintViolationException(ConstraintViolationException e) {
-        log.error("ConstraintViolationException happend. reason is {}", e.getMessage());
+        log.error("ConstraintViolationException happend. reason is {}", e);
         TyResponse response = new TyResponse();
         response.setCode(String.valueOf(HttpStatus.BAD_REQUEST.value()));
         response.setMsg("校验异常:" + e.getMessage());
@@ -32,7 +32,7 @@ public class TyExceptionHander {
     @ExceptionHandler(value = {IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public TyResponse IllegalArgumentException(IllegalArgumentException e) {
-        log.error("IllegalArgumentException happend. reason is {}", e.getMessage());
+        log.error("IllegalArgumentException happend. reason is {}", e);
         TyResponse response = new TyResponse();
         response.setCode(String.valueOf(HttpStatus.BAD_REQUEST.value()));
         response.setMsg("非法参数异常:" + e.getMessage());
@@ -42,7 +42,7 @@ public class TyExceptionHander {
     @ExceptionHandler(value = {NoHandlerFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public TyResponse noHandlerFoundException(HttpServletRequest requset, Exception e) {
-        log.error("NoHandlerFoundException happend. reason is {}", e.getMessage());
+        log.error("NoHandlerFoundException happend. reason is {}", e);
         TyResponse response = new TyResponse();
         response.setCode(String.valueOf(HttpStatus.BAD_REQUEST.value()));
         response.setMsg("请求非法:" + requset.getRequestURI());
@@ -65,7 +65,7 @@ public class TyExceptionHander {
     @ResponseBody
     @ExceptionHandler(TyException.class)
     public TyResponse processTyException(HttpServletRequest requset, TyException e) {
-        log.error("TyException happend. reason is {}", e.getMessage());
+        log.error("TyException happend. reason is {}", e);
         TyResponse response = new TyResponse();
         response.setCode(String.valueOf(e.getCode()));
         response.setMsg("框架异常[" + e.getMessage() + "]");
@@ -75,7 +75,7 @@ public class TyExceptionHander {
     @ResponseBody
     @ExceptionHandler(MyBatisSystemException.class)
     public TyResponse processMyBatisSystemException(HttpServletRequest requset, MyBatisSystemException e) {
-        log.error("MyBatisSystemException happend. reason is {}", e.getMessage());
+        log.error("MyBatisSystemException happend. reason is {}", e);
         TyResponse response = new TyResponse();
         response.setCode(String.valueOf(ResultCode.MYBETIS_EXCEPTION.getCode()));
         response.setMsg("反射异常[" + e.getMessage() + "]");
@@ -85,7 +85,7 @@ public class TyExceptionHander {
     @ResponseBody
     @ExceptionHandler(ReflectionException.class)
     public TyResponse processReflectionException(HttpServletRequest requset, ReflectionException e) {
-        log.error("ReflectionException happend. reason is {}", e.getMessage());
+        log.error("ReflectionException happend. reason is {}", e);
         TyResponse response = new TyResponse();
         response.setCode(String.valueOf(ResultCode.MYBETIS_EXCEPTION.getCode()));
         response.setMsg("反射异常[" + e.getMessage() + "]");
