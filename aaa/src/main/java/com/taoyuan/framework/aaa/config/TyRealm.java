@@ -69,7 +69,7 @@ public class TyRealm extends AuthorizingRealm {
             throw new LockedAccountException();
         }
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfo.getUsername(), //用户名
+                userInfo.getUserName(), //用户名
                 userInfo.getPassword(), //密码
                 ByteSource.Util.bytes(TyDateUtils.convertDateToString(userInfo.getCreateTime())),//salt=username+salt
                 getName()  //realm name
