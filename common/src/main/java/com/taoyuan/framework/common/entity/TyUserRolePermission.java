@@ -20,7 +20,7 @@ public class TyUserRolePermission extends BaseEntity{
     public TyUserRolePermission(String sessionId, TyUser user, List<TyRole> roles, List<TyPermission> permissions){
         this.setSessionId(sessionId);
         this.setUserId(user.getId());
-        this.setUserName(user.getUsername());
+        this.setUserName(user.getUserName());
         this.setName(user.getName());
         this.setPhone(user.getPhone());
         this.setRoles(roles);

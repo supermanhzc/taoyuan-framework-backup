@@ -60,7 +60,7 @@ public class TyRealm extends AuthorizingRealm {
 //        Tytem.out.println(token.getCredentials());
         //通过username从数据库中查找 User对象，如果找到，没找到.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        TyUser userInfo = userService.getOne(new QueryWrapper<TyUser>().eq("username",username));
+        TyUser userInfo = userService.getOne(new QueryWrapper<TyUser>().eq("username",username).ne("status", UserConsts.DELETED.ordinal()));
 //        Tytem.out.println("----->>userInfo="+userInfo);
         if (userInfo == null) {
             throw new AuthenticationException();
@@ -69,7 +69,7 @@ public class TyRealm extends AuthorizingRealm {
             throw new LockedAccountException();
         }
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfo.getUsername(), //用户名
+                userInfo.getUserName(), //用户名
                 userInfo.getPassword(), //密码
                 ByteSource.Util.bytes(TyDateUtils.convertDateToString(userInfo.getCreateTime())),//salt=username+salt
                 getName()  //realm name

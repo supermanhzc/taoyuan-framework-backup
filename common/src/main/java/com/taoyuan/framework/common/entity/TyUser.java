@@ -16,21 +16,16 @@ public class TyUser implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-    private String username;
+    @TableField(value = "username")
+    private String userName;
     private String name;
     private String password;
     private String phone;
-    private Integer type;
     private Integer status;
     @TableField(value = "create_time")
     private Date createTime;
     @TableField(value="create_user")
     private Long createUser;
-
-    public TyUser(){
-        this(-1);
-    }
-    public TyUser(Integer type){
-        this.setType(type);
-    }
+    @TableField(value = "update_user")
+    private Long updateUser;
 }
