@@ -46,7 +46,7 @@ public class TyVerificationCodeController {
         AppConfig config = ConfigLoader.load(ConfigLoader.ConfigType.Message);
         MessageSend submail = new MessageSend(config);
         submail.addTo(dest);
-        String vCode = TyRandomUtil.getRandomStr(6);
+        String vCode = TyRandomUtil.getRandomNum(6);
         submail.addContent("【88】尊敬的会员您好！您的验证码是" + vCode + ",请在1分钟内输入验证。");
         String rturnMsg = submail.send();
         if (!rturnMsg.contains("success")) {
