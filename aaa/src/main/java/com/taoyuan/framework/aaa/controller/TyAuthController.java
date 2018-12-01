@@ -18,6 +18,7 @@ import com.taoyuan.framework.common.util.TyDateUtils;
 import com.taoyuan.framework.common.util.TyIpUtil;
 import com.taoyuan.framework.oper.IProxyOperService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.LockedAccountException;
@@ -82,7 +83,6 @@ public class TyAuthController {
         userInfo.setPassword(newPassword);
         userInfo.setCreateTime(currentDate);
         userInfo.setStatus(UserConsts.INIT.ordinal());
-
         TyUserRolePermission currentUser = TySession.getCurrentUser();
         if (currentUser == null) {
             userInfo.setCreateUser(0l);
@@ -121,7 +121,7 @@ public class TyAuthController {
             String ip = TyIpUtil.getIpAddr(request);
             userLogin.setIp(ip);
             userLogin.setAddr(TyIpUtil.getAddressByIp(ip));
-            userLogin.setType(getUseerType(fullUser.getRoles().get(0)));
+//            userLogin.setType(getUseerType(fullUser.getRoles().get(0)));
             userLogin.setStatus(1);
             userLoginService.saveOrUpdate(userLogin);
             return new TySuccessResponse(fullUser);
@@ -140,7 +140,7 @@ public class TyAuthController {
         }
     }
 
-    @RequestMapping(value = "/modify/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public TyResponse modify(@RequestBody TyUser userInfo){
         TyUserRolePermission currentUser = TySession.getCurrentUser();
         if (null != currentUser) {
