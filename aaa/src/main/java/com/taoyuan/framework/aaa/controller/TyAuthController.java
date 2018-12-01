@@ -53,8 +53,7 @@ public class TyAuthController {
     @Autowired
     private TyPermissionService permissionService;
 
-    @Autowired
-    private HashedCredentialsMatcher hashedCredentialsMatcher;
+
 
     @Autowired
     private TyUserLoginService userLoginService;
@@ -64,37 +63,7 @@ public class TyAuthController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public TyResponse register(@RequestBody TyUser userInfo) {
-        TyRealm realm = new TyRealm();
-
-        Date currentDate = new Date();
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfo.getUserName(), //用户名
-                userInfo.getPassword(), //密码
-                ByteSource.Util.bytes(TyDateUtils.convertDateToString(currentDate)),//salt=username+salt
-                realm.getName()  //realm name
-        );
-
-        String newPassword = new SimpleHash(hashedCredentialsMatcher.getHashAlgorithmName(),
-                authenticationInfo.getCredentials(),
-                ByteSource.Util.bytes(authenticationInfo.getCredentialsSalt()),
-                hashedCredentialsMatcher.getHashIterations()).toHex();
-
-
-        userInfo.setPassword(newPassword);
-        userInfo.setCreateTime(currentDate);
-        userInfo.setStatus(UserConsts.INIT.ordinal());
-        TyUserRolePermission currentUser = TySession.getCurrentUser();
-        if (currentUser == null) {
-            userInfo.setCreateUser(0l);
-        } else {
-            userInfo.setCreateUser(currentUser.getUserId());
-        }
-        boolean result = userService.saveOrUpdate(userInfo);
-        if(result){
-            return new TySuccessResponse(userInfo);
-        }else {
-            throw TyExceptionUtil.buildException(ResultCode.USER_REGISTRY_ERROR);
-        }
+        return userService.register(userInfo);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -121,7 +90,7 @@ public class TyAuthController {
             String ip = TyIpUtil.getIpAddr(request);
             userLogin.setIp(ip);
             userLogin.setAddr(TyIpUtil.getAddressByIp(ip));
-//            userLogin.setType(getUseerType(fullUser.getRoles().get(0)));
+//            userLogin.setType(fullUser.get);
             userLogin.setStatus(1);
             userLoginService.saveOrUpdate(userLogin);
             return new TySuccessResponse(fullUser);
@@ -142,24 +111,12 @@ public class TyAuthController {
 
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public TyResponse modify(@RequestBody TyUser userInfo){
-        TyUserRolePermission currentUser = TySession.getCurrentUser();
-        if (null != currentUser) {
-            userInfo.setUpdateUser(currentUser.getUserId());
-        }
-        if(userService.updateById(userInfo)){
-            return new TySuccessResponse("user update successful");
-        }
-        throw TyExceptionUtil.buildException(ResultCode.USER_UPDATE_ERROR);
+        return userService.modify(userInfo);
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     public TyResponse delete(@PathVariable("id") Long id){
-        TyUser user = userService.getById(id);
-        if(null != user){
-            user.setStatus(UserConsts.DELETED.ordinal());
-            return this.modify(user);
-        }
-        throw TyExceptionUtil.buildException(ResultCode.USER_REMOVE_ERROR);
+        return userService.delete(id);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
