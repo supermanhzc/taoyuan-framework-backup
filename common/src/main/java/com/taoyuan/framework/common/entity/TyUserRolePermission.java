@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class TyUserRolePermission extends BaseEntity{
+public class TyUserRolePermission extends TyBaseEntity{
 
     private String sessionId;
     private Long userId;
