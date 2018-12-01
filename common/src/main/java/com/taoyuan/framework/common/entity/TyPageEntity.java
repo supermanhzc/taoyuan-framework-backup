@@ -2,15 +2,15 @@ package com.taoyuan.framework.common.entity;
 
 import lombok.Data;
 
-import java.util.Objects;
+import java.io.Serializable;
 
 /**
  * 分页参数
  */
 @Data
-public class TyPageEntity {
+public class TyPageEntity implements Serializable {
 
-    private Integer pegeIndex;
+    private Integer pageIndex;
 
     private Integer pageSize;
 
