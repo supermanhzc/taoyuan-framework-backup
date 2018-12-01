@@ -63,7 +63,10 @@ public class TyAuthController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public TyResponse register(@RequestBody TyUser userInfo) {
-        return userService.register(userInfo);
+        if(userService.register(userInfo)){
+            return new TySuccessResponse("user register successfully.");
+        }
+        throw TyExceptionUtil.buildException(ResultCode.USER_REGISTRY_ERROR);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -111,12 +114,18 @@ public class TyAuthController {
 
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public TyResponse modify(@RequestBody TyUser userInfo){
-        return userService.modify(userInfo);
+        if(userService.modify(userInfo)){
+            return new TySuccessResponse("user modify successfully.");
+        }
+        throw TyExceptionUtil.buildException(ResultCode.USER_UPDATE_ERROR);
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     public TyResponse delete(@PathVariable("id") Long id){
-        return userService.delete(id);
+        if(userService.delete(id)){
+            return new TySuccessResponse("user remove successfully.");
+        }
+        throw TyExceptionUtil.buildException(ResultCode.USER_REMOVE_ERROR);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)

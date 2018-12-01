@@ -6,11 +6,11 @@ import com.taoyuan.framework.common.http.TyResponse;
 
 public interface TyUserService extends IService<TyUser> {
 
-    TyResponse register(TyUser userInfo);
+    boolean register(TyUser userInfo);
 
-    TyResponse modify(TyUser userInfo);
+    boolean modify(TyUser userInfo);
 
-    TyResponse delete(Long id);
+    boolean delete(Long id);
 
     TyUser getUserByName(String name);
 
