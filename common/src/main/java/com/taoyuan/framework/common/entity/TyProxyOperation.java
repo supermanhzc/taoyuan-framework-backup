@@ -25,11 +25,14 @@ public class TyProxyOperation {
     //余额
     private BigDecimal account;
 
-    //类型：1代充，2充值，3提现，4登录，5回收
+    //类型：1代充，2充值，3提现，4登录，5回收, 6互转
     private int type;
 
     //描述
     private String description;
+
+    //ip
+    private String ip;
 
     private Date time;
 }

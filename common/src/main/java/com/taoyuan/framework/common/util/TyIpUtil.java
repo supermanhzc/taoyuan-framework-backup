@@ -1,5 +1,9 @@
 package com.taoyuan.framework.common.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -85,28 +89,27 @@ public class TyIpUtil {
     }
 
 
-
-    public static String getAddressByIp(String ip){
-        if(StringUtils.isEmpty(ip)){
+    public static String getAddressByIp(String ip) {
+        if (StringUtils.isEmpty(ip)) {
             return "";
         }
 
-        if(ip.startsWith("127")||ip.startsWith("192")){
+        if (ip.startsWith("127") || ip.startsWith("192")) {
             return "本地";
         }
 
         String source = "http://ip.ws.126.net/ipquery?ip=";
-        String url = source+ip;
+        String url = source + ip;
         try {
-            return sendHttpGet(url,null);
+            return sendHttpGet(url, null);
         } catch (IOException e) {
-            log.info("根据ip获取地址信息异常",e);
+            log.info("根据ip获取地址信息异常", e);
         }
 
         return null;
     }
+
     /**
-     *
      * @param url
      * @param params
      * @return
@@ -114,22 +117,23 @@ public class TyIpUtil {
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    public static String sendHttpGet(String url, Map<String, Object> params) throws ParseException, UnsupportedEncodingException, IOException{
+    public static String sendHttpGet(String url, Map<String, Object> params) throws ParseException,
+            UnsupportedEncodingException, IOException {
         RequestConfig config = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(3000).build();
         HttpClient httpclient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
-        if(params !=null && !params.isEmpty()){
+        if (params != null && !params.isEmpty()) {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>(params.size());
-            for (String key :params.keySet()){
+            for (String key : params.keySet()) {
                 pairs.add(new BasicNameValuePair(key, params.get(key).toString()));
             }
-            url +="?"+ EntityUtils.toString(new UrlEncodedFormEntity(pairs), CHARSET);
+            url += "?" + EntityUtils.toString(new UrlEncodedFormEntity(pairs), CHARSET);
         }
 
         HttpGet httpGet = new HttpGet(url);
         CloseableHttpResponse response = (CloseableHttpResponse) httpclient.execute(httpGet);
         int statusCode = response.getStatusLine().getStatusCode();
-        if(statusCode !=200){
+        if (statusCode != 200) {
             httpGet.abort();
             throw new RuntimeException("HttpClient,error status code :" + statusCode);
         }
@@ -141,13 +145,45 @@ public class TyIpUtil {
             EntityUtils.consume(entity);
             response.close();
             String[] values = result.split("\\{")[1].split("\\}")[0].split(",");
-            Map<String,String> addrMap = new HashMap<>();
-            for(int i=0;i< values.length;i++){
-                String[] addrInfs  =values[i].split(":");
-                addrMap.put(addrInfs[0].trim(),addrInfs[1].trim().replace("\"",""));
+            Map<String, String> addrMap = new HashMap<>();
+            for (int i = 0; i < values.length; i++) {
+                String[] addrInfs = values[i].split(":");
+                addrMap.put(addrInfs[0].trim(), addrInfs[1].trim().replace("\"", ""));
             }
-            return addrMap.get("province")+addrMap.get("city");
-        }else{
+            return addrMap.get("province") + addrMap.get("city");
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取游戏数据
+     * @param url
+     * @return
+     * @throws ParseException
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
+    public static String getGameData(String url) throws ParseException, UnsupportedEncodingException, IOException {
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(3000).build();
+        HttpClient httpclient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpResponse response = (CloseableHttpResponse) httpclient.execute(httpGet);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode != 200) {
+            httpGet.abort();
+            throw new RuntimeException("HttpClient,error status code :" + statusCode);
+        }
+
+        HttpEntity entity = response.getEntity();
+        String result = null;
+        if (entity != null) {
+            result = EntityUtils.toString(entity, "utf-8");
+            EntityUtils.consume(entity);
+            response.close();
+            return result;
+        } else {
             return null;
         }
     }
@@ -155,10 +191,40 @@ public class TyIpUtil {
     public static void main(String[] args) {
         String ip = "221.232.245.73";
         try {
-            String result = sendHttpGet("http://ip.ws.126.net/ipquery?ip="+ip,null);
-            System.out.println(result);
+            String result = getGameData("http://www.20dou.com/code.php?b=yd");
+            List<A> list = JSONObject.parseArray(result, A.class);
+            for (A a : list) {
+                System.out.println(a);
+            }
+//            JSONArray.String result = sendHttpGet("http://ip.ws.126.net/ipquery?ip="+ip,null);
+            System.out.println("result:" + list);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+}
+
+@Data
+class A {
+    private String dateno;
+    private String opencode;
+    private String time;
+
+    public A(String dateno, String opencode, String time) {
+        this.dateno = dateno;
+        this.opencode = opencode;
+        this.time = time;
+    }
+
+    public A() {
+    }
+
+    @Override
+    public String toString() {
+        return "A{" +
+                "dateno='" + dateno + '\'' +
+                ", opencode='" + opencode + '\'' +
+                ", time='" + time + '\'' +
+                '}';
     }
 }
