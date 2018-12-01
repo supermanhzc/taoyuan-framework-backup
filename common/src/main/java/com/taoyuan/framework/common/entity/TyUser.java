@@ -21,6 +21,7 @@ public class TyUser implements Serializable {
     private String name;
     private String password;
     private String phone;
+    private Integer type;
     private Integer status;
     @TableField(value = "create_time")
     private Date createTime;
