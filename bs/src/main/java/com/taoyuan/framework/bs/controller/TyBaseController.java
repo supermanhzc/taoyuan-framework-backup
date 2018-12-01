@@ -29,8 +29,8 @@ public class TyBaseController {
             return page;
         }
 
-        if (null != pageEntity.getPegeIndex()) {
-            page.setCurrent(pageEntity.getPegeIndex());
+        if (null != pageEntity.getPageIndex()) {
+            page.setCurrent(pageEntity.getPageIndex());
             if (null != pageEntity.getPageSize()) {
                 page.setSize(Long.valueOf(pageEntity.getPageSize()));
             } else {
