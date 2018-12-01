@@ -1,5 +1,6 @@
 package com.taoyuan.framework.bs.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.taoyuan.framework.common.entity.TyPageEntity;
 import com.taoyuan.framework.common.exception.ValidateException;
@@ -12,10 +13,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Map;
 
 @Slf4j
 @RestController
-public class TyBaseController {
+public abstract class TyBaseController<T extends Object> {
 
     /**
      * 获取分页参数，必填
@@ -29,8 +31,8 @@ public class TyBaseController {
             return page;
         }
 
-        if (null != pageEntity.getPegeIndex()) {
-            page.setCurrent(pageEntity.getPegeIndex());
+        if (null != pageEntity.getPageIndex()) {
+            page.setCurrent(pageEntity.getPageIndex());
             if (null != pageEntity.getPageSize()) {
                 page.setSize(Long.valueOf(pageEntity.getPageSize()));
             } else {
