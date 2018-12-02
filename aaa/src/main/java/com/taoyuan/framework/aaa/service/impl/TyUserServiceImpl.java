@@ -33,7 +33,7 @@ public class TyUserServiceImpl extends ServiceImpl<UserInfoMapper, TyUser> imple
     private HashedCredentialsMatcher hashedCredentialsMatcher;
 
     @Override
-    public TyResponse register(TyUser userInfo) {
+    public boolean register(TyUser userInfo) {
         Date currentDate = new Date();
         String newPassword = this.getEncodePassword(userInfo.getUserName(), userInfo.getPassword(), TyDateUtils.convertDateToString(currentDate));
 
@@ -46,12 +46,7 @@ public class TyUserServiceImpl extends ServiceImpl<UserInfoMapper, TyUser> imple
         } else {
             userInfo.setCreateUser(currentUser.getUserId());
         }
-        boolean result = this.saveOrUpdate(userInfo);
-        if(result){
-            return new TySuccessResponse(userInfo);
-        }else {
-            throw TyExceptionUtil.buildException(ResultCode.USER_REGISTRY_ERROR);
-        }
+        return this.saveOrUpdate(userInfo);
     }
 
     private String getEncodePassword(String username, String password, String salt){
@@ -71,7 +66,7 @@ public class TyUserServiceImpl extends ServiceImpl<UserInfoMapper, TyUser> imple
     }
 
     @Override
-    public TyResponse modify(TyUser userInfo) {
+    public boolean modify(TyUser userInfo) {
         if(null == userInfo.getId()){
             throw new ValidateException("user id can't be null.");
         }
@@ -84,20 +79,17 @@ public class TyUserServiceImpl extends ServiceImpl<UserInfoMapper, TyUser> imple
             String password = this.getEncodePassword(user.getUserName(), userInfo.getPassword(), TyDateUtils.convertDateToString(user.getCreateTime()));
             userInfo.setPassword(password);
         }
-        if(this.updateById(userInfo)){
-            return new TySuccessResponse("account update successful");
-        }
-        throw TyExceptionUtil.buildException(ResultCode.USER_UPDATE_ERROR);
+        return this.updateById(userInfo);
     }
 
     @Override
-    public TyResponse delete(Long id) {
+    public boolean delete(Long id) {
         TyUser user = this.getById(id);
         if(null != user){
             user.setStatus(UserConsts.DELETED.ordinal());
             return this.modify(user);
         }
-        throw TyExceptionUtil.buildException(ResultCode.USER_REMOVE_ERROR);
+        return false;
     }
 
     @Override
