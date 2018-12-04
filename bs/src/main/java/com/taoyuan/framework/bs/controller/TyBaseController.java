@@ -31,22 +31,27 @@ public abstract class TyBaseController<T extends Object> {
             return page;
         }
 
-        if (null != pageEntity.getPageIndex()) {
-            page.setCurrent(pageEntity.getPageIndex());
-            if (null != pageEntity.getPageSize()) {
-                page.setSize(Long.valueOf(pageEntity.getPageSize()));
+        return getPage(pageEntity.getPageIndex(), pageEntity.getPageSize());
+    }
+
+    public Page getPage(Integer index, Integer size) {
+        Page page = new Page();
+        if (null != index) {
+            page.setCurrent(index);
+            if (null != size) {
+                page.setSize(Long.valueOf(size));
             } else {
                 throw new ValidateException("分页参数pageSize缺失。");
             }
-        } else if (null != pageEntity.getPageSize()) {
+        } else if (null != size) {
             throw new ValidateException("分页参数paseIndex缺失。");
         }
-
         return page;
     }
 
     /**
      * 获取当前用户ID
+     *
      * @return
      */
     public Long getCurrentUserId() {
@@ -56,6 +61,7 @@ public abstract class TyBaseController<T extends Object> {
 
     /**
      * 获取当前用户名称
+     *
      * @return
      */
     public String getCurrentUserName() {
@@ -64,6 +70,7 @@ public abstract class TyBaseController<T extends Object> {
 
     /**
      * 获取当前用户IP
+     *
      * @return
      */
     public String getCurrentIp() {
@@ -72,7 +79,7 @@ public abstract class TyBaseController<T extends Object> {
         return TyIpUtil.getIpAddr(request);
     }
 
-    public Date getCurrentDate(){
+    public Date getCurrentDate() {
         return new Date();
     }
 }
