@@ -25,7 +25,7 @@ public class TyProxyOperation {
     //余额
     private BigDecimal account;
 
-    //类型：1代充，2充值，3提现，4登录，5回收, 6互转
+    //类型：1代充，2充值，3提现，4登录，5回收, 6互转, 创建卡密
     private int type;
 
     //描述

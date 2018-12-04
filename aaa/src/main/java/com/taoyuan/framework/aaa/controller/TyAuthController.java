@@ -2,43 +2,27 @@ package com.taoyuan.framework.aaa.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.taoyuan.framework.aaa.config.TyRealm;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
-import com.taoyuan.framework.aaa.service.TyUserLoginService;
 import com.taoyuan.framework.aaa.service.TyUserService;
 import com.taoyuan.framework.common.constant.ResultCode;
-import com.taoyuan.framework.common.constant.UserConsts;
 import com.taoyuan.framework.common.entity.*;
 import com.taoyuan.framework.common.exception.TyExceptionUtil;
 import com.taoyuan.framework.common.http.TyResponse;
 import com.taoyuan.framework.common.http.TySession;
 import com.taoyuan.framework.common.http.TySuccessResponse;
-import com.taoyuan.framework.common.util.TyDateUtils;
-import com.taoyuan.framework.common.util.TyIpUtil;
 import com.taoyuan.framework.oper.IProxyOperService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.LockedAccountException;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
-import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
-
-import static com.taoyuan.framework.common.constant.ErrorCode.USER_NOT_LOGGED_IN;
 
 @Slf4j
 @RestController
@@ -52,11 +36,6 @@ public class TyAuthController {
 
     @Autowired
     private TyPermissionService permissionService;
-
-
-
-    @Autowired
-    private TyUserLoginService userLoginService;
 
     @Autowired
     private IProxyOperService proxyOperService;
@@ -75,7 +54,6 @@ public class TyAuthController {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(userInfo.getUserName(), userInfo.getPassword());
 
-        TyUserLoginEntity userLogin = new TyUserLoginEntity();
         try {
             subject.login(token);
             String sessionId = subject.getSession().getId().toString();
@@ -86,28 +64,12 @@ public class TyAuthController {
 
             TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions);
             subject.getSession().setAttribute(sessionId, fullUser);
-            HttpServletRequest request =
-                    ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            userLogin.setMemberId(user.getId());
-            userLogin.setMemberNickName(userInfo.getUserName());
-            String ip = TyIpUtil.getIpAddr(request);
-            userLogin.setIp(ip);
-            userLogin.setAddr(TyIpUtil.getAddressByIp(ip));
-//            userLogin.setType(fullUser.get);
-            userLogin.setStatus(1);
-            userLoginService.saveOrUpdate(userLogin);
             return new TySuccessResponse(fullUser);
         } catch (LockedAccountException e) {
-            userLogin.setStatus(0);
-            userLoginService.saveOrUpdate(userLogin);
             throw TyExceptionUtil.buildException(ResultCode.USER_ACCOUNT_FORBIDDEN);
         } catch (ShiroException e) {
-            userLogin.setStatus(0);
-            userLoginService.saveOrUpdate(userLogin);
             throw TyExceptionUtil.buildException(ResultCode.USER_LOGIN_ERROR);
         } catch (Exception e) {
-            userLogin.setStatus(0);
-            userLoginService.saveOrUpdate(userLogin);
             throw TyExceptionUtil.buildException(ResultCode.FAIL.getCode(), e.getMessage());
         }
     }
