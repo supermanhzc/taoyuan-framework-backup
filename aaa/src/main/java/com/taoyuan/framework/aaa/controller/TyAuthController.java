@@ -6,12 +6,15 @@ import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
 import com.taoyuan.framework.aaa.service.TyUserService;
 import com.taoyuan.framework.common.constant.ResultCode;
-import com.taoyuan.framework.common.entity.*;
+import com.taoyuan.framework.common.entity.TyPermission;
+import com.taoyuan.framework.common.entity.TyRole;
+import com.taoyuan.framework.common.entity.TyUser;
+import com.taoyuan.framework.common.entity.TyUserRolePermission;
 import com.taoyuan.framework.common.exception.TyExceptionUtil;
 import com.taoyuan.framework.common.http.TyResponse;
 import com.taoyuan.framework.common.http.TySession;
 import com.taoyuan.framework.common.http.TySuccessResponse;
-import com.taoyuan.framework.oper.IProxyOperService;
+//import com.taoyuan.framework.oper.IProxyOperService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
@@ -21,7 +24,6 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -37,8 +39,8 @@ public class TyAuthController {
     @Autowired
     private TyPermissionService permissionService;
 
-    @Autowired
-    private IProxyOperService proxyOperService;
+//    @Autowired
+//    private IProxyOperService proxyOperService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public TyResponse register(@RequestBody TyUser userInfo) {
@@ -112,36 +114,36 @@ public class TyAuthController {
 
 
     }
-    private int getUseerType(TyRole role) {
-        String name = role.getName();
-        if ("超级管理员".equals(name)) {
-            return 1;
-        } else if ("网站管理员".equals(name)) {
-            return 2;
-        } else if ("代理会员".equals(name)) {
-            return 3;
-        } else if ("钻石会员".equals(name)) {
-            return 4;
-        } else if ("普通会员".equals(name)) {
-            return 5;
-        }
-
-        return 0;
-    }
-
-    //只记录代理的操作日志，其他不记录
-    private void saveOperation(int type, String ip) {
-        if (2 == type) {
-            TyProxyOperation oper = new TyProxyOperation();
-            //TODO真实数据，暂时写0
-            oper.setAccount(BigDecimal.ZERO);
-            oper.setDescription("登录");
-            oper.setType(4);
-            oper.setMoneyChanged(BigDecimal.ZERO);
-            oper.setProxyId(TySession.getCurrentUser().getUserId());
-            oper.setProxyName(TySession.getCurrentUser().getName());
-            oper.setDescription(ip);
-            proxyOperService.save(oper);
-        }
-    }
+//    private int getUseerType(TyRole role) {
+//        String name = role.getName();
+//        if ("超级管理员".equals(name)) {
+//            return 1;
+//        } else if ("网站管理员".equals(name)) {
+//            return 2;
+//        } else if ("代理会员".equals(name)) {
+//            return 3;
+//        } else if ("钻石会员".equals(name)) {
+//            return 4;
+//        } else if ("普通会员".equals(name)) {
+//            return 5;
+//        }
+//
+//        return 0;
+//    }
+//
+//    //只记录代理的操作日志，其他不记录
+//    private void saveOperation(int type, String ip) {
+//        if (2 == type) {
+//            TyProxyOperation oper = new TyProxyOperation();
+//            //TODO真实数据，暂时写0
+//            oper.setAccount(BigDecimal.ZERO);
+//            oper.setDescription("登录");
+//            oper.setType(4);
+//            oper.setMoneyChanged(BigDecimal.ZERO);
+//            oper.setProxyId(TySession.getCurrentUser().getUserId());
+//            oper.setProxyName(TySession.getCurrentUser().getName());
+//            oper.setDescription(ip);
+//            proxyOperService.save(oper);
+//        }
+//    }
 }
