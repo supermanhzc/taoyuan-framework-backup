@@ -15,6 +15,8 @@ import java.lang.reflect.Method;
 @Data
 public class TyBaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 4125096758372084309L;
+
     public boolean canUpdate() {
         Field[] fields = this.getClass().getDeclaredFields();
         for(Field field: fields){
