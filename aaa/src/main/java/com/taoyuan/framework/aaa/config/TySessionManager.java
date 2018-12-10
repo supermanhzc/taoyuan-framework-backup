@@ -17,6 +17,7 @@ public class TySessionManager extends DefaultWebSessionManager {
 
     public TySessionManager(){
         super();
+        this.setGlobalSessionTimeout(24 * MILLIS_PER_HOUR);
     }
 
     @Override
