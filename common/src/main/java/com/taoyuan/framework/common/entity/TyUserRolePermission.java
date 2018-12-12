@@ -14,6 +14,7 @@ public class TyUserRolePermission extends TyBaseEntity{
     private String name;
     private String phone;
     private Integer status;
+    private Integer type;
     private List<TyRole> roles;
     private List<TyPermission> permissions;
 
@@ -26,6 +27,7 @@ public class TyUserRolePermission extends TyBaseEntity{
         this.setRoles(roles);
         this.setPermissions(permissions);
         this.setStatus(user.getStatus());
+        this.setType(user.getType());
     }
 }
 
