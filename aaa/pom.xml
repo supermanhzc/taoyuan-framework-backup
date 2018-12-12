@@ -80,5 +80,10 @@
       <artifactId>httpmime</artifactId>
       <version>4.3.5</version>
     </dependency>
+      <dependency>
+          <groupId>com.taoyuan.framework</groupId>
+          <artifactId>framework-bs</artifactId>
+          <version>0.0.1-SNAPSHOT</version>
+      </dependency>
   </dependencies>
 </project>
