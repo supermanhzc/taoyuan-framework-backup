@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
 import com.taoyuan.framework.aaa.service.TyUserService;
+import com.taoyuan.framework.bs.aspect.OperControllerLog;
 import com.taoyuan.framework.common.constant.ResultCode;
 import com.taoyuan.framework.common.entity.TyPermission;
 import com.taoyuan.framework.common.entity.TyRole;
@@ -51,6 +52,7 @@ public class TyAuthController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @OperControllerLog(type = "用户登录", module = "AAA")
     public TyResponse<TyUserRolePermission> login(@RequestBody TyUser userInfo) {
         JSONObject jsonObject = new JSONObject();
         Subject subject = SecurityUtils.getSubject();
@@ -90,17 +92,6 @@ public class TyAuthController {
             return new TySuccessResponse("user remove successfully.");
         }
         throw TyExceptionUtil.buildException(ResultCode.USER_REMOVE_ERROR);
-    }
-
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public void logout() {
-        Subject subject = SecurityUtils.getSubject();
-        subject.logout();
-    }
-
-    @RequestMapping(value = "/unauth", method = RequestMethod.GET)
-    public void unauth() {
-        throw TyExceptionUtil.buildException(ResultCode.USER_NOT_LOGGED_IN);
     }
 
     @RequestMapping(value = "/heartbeat", method = RequestMethod.POST)
