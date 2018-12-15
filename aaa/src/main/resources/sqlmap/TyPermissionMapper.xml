@@ -12,6 +12,7 @@
         ty_role_permission trp
         LEFT JOIN ty_permission tp ON trp.permission_id = tp.id
         WHERE
+        tp.enabled = 1 AND
         tp.resource_type = 'action' AND
         trp.role_id IN (
         SELECT
@@ -20,6 +21,28 @@
         ty_user_role tur
         LEFT JOIN ty_role tr ON tur.role_id = tr.id
         WHERE
+        tr.enabled = 1 AND
+        tur.user_id = #{id}
+        )
+    </select>
+
+    <select id="selectMenuByUser" parameterType="com.taoyuan.framework.common.entity.TyUser" resultType="com.taoyuan.framework.common.entity.TyPermission">
+        SELECT
+        tp.*
+        FROM
+        ty_role_permission trp
+        LEFT JOIN ty_permission tp ON trp.permission_id = tp.id
+        WHERE
+        tp.enabled = 1 AND
+        tp.resource_type = 'menu' AND
+        trp.role_id IN (
+        SELECT
+        role_id
+        FROM
+        ty_user_role tur
+        LEFT JOIN ty_role tr ON tur.role_id = tr.id
+        WHERE
+        tr.enabled = 1 AND
         tur.user_id = #{id}
         )
     </select>

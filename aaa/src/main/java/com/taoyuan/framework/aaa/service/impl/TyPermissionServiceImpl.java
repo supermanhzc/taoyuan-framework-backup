@@ -15,4 +15,9 @@ public class TyPermissionServiceImpl extends ServiceImpl<TyPermissionMapper, TyP
     public List<TyPermission> selectPermByUser(TyUser tyUser) throws Exception {
         return baseMapper.selectPermByUser(tyUser);
     }
+
+    @Override
+    public List<TyPermission> selectMenuByUser(TyUser tyUser) throws Exception {
+        return baseMapper.selectMenuByUser(tyUser);
+    }
 }

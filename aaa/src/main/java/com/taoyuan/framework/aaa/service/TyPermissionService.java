@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TyPermissionService extends IService<TyPermission> {
     List<TyPermission> selectPermByUser(TyUser tyUser) throws Exception;
+    List<TyPermission> selectMenuByUser(TyUser tyUser) throws Exception;
 }

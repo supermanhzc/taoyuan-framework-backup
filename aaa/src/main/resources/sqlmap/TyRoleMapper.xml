@@ -12,6 +12,7 @@
         ty_user_role tur
         LEFT JOIN ty_role tr ON tur.role_id = tr.id
         WHERE
+        tr.enabled = 1 AND
         tur.user_id = #{id}
     </select>
 </mapper>

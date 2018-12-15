@@ -10,4 +10,5 @@ import java.util.List;
 @Mapper
 public interface TyPermissionMapper extends BaseMapper<TyPermission> {
     List<TyPermission> selectPermByUser(TyUser tyUser);
+    List<TyPermission> selectMenuByUser(TyUser tyUser);
 }

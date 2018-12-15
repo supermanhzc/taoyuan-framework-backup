@@ -51,6 +51,30 @@ public class TyAuthController {
         throw TyExceptionUtil.buildException(ResultCode.USER_REGISTRY_ERROR);
     }
 
+    @RequestMapping(value = "/users/info", method = RequestMethod.GET)
+    @OperControllerLog(type = "查询用户信息", module = "AAA")
+    public TyResponse<TyUserRolePermission> getUserInfo() {
+        Subject subject = SecurityUtils.getSubject();
+        TyUserRolePermission currentUser = TySession.getCurrentUser();
+        if(null != currentUser){
+            List<TyRole> roles = null;
+            try {
+                TyUser tyUser = new TyUser();
+                tyUser.setId(currentUser.getUserId());
+                roles = roleService.selectRoleByUser(tyUser);
+                List<TyPermission> permissions = permissionService.selectPermByUser(tyUser);
+                List<TyPermission> menus = permissionService.selectMenuByUser(tyUser);
+                currentUser.setRoles(roles);
+                currentUser.setPermissions(permissions);
+                currentUser.setMenus(menus);
+                subject.getSession().setAttribute(subject.getSession().getId().toString(), currentUser);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new TySuccessResponse<>(currentUser);
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @OperControllerLog(type = "用户登录", module = "AAA")
     public TyResponse<TyUserRolePermission> login(@RequestBody TyUser userInfo) {
@@ -65,8 +89,8 @@ public class TyAuthController {
 
             List<TyRole> roles = roleService.selectRoleByUser(user);
             List<TyPermission> permissions = permissionService.selectPermByUser(user);
-
-            TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions);
+            List<TyPermission> menus = permissionService.selectMenuByUser(user);
+            TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions, menus);
             subject.getSession().setAttribute(sessionId, fullUser);
             return new TySuccessResponse(fullUser);
         } catch (LockedAccountException e) {
@@ -78,6 +102,10 @@ public class TyAuthController {
         }
     }
 
+    private void getMenus(TyUser user) throws Exception {
+        List<TyPermission> menus = permissionService.selectMenuByUser(user);
+
+    }
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public TyResponse modify(@RequestBody TyUser userInfo){
         if(userService.modify(userInfo)){

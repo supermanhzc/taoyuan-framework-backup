@@ -17,8 +17,9 @@ public class TyUserRolePermission extends TyBaseEntity{
     private Integer type;
     private List<TyRole> roles;
     private List<TyPermission> permissions;
+    private List<TyPermission> menus;
 
-    public TyUserRolePermission(String sessionId, TyUser user, List<TyRole> roles, List<TyPermission> permissions){
+    public TyUserRolePermission(String sessionId, TyUser user, List<TyRole> roles, List<TyPermission> permissions, List<TyPermission> menus){
         this.setSessionId(sessionId);
         this.setUserId(user.getId());
         this.setUserName(user.getUserName());
@@ -28,6 +29,7 @@ public class TyUserRolePermission extends TyBaseEntity{
         this.setPermissions(permissions);
         this.setStatus(user.getStatus());
         this.setType(user.getType());
+        this.setMenus(menus);
     }
 }
 
