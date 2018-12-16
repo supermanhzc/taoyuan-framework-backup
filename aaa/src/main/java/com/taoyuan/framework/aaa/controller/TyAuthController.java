@@ -115,13 +115,6 @@ public class TyAuthController {
         }
     }
 
-    private void getMenus(TyUser user) throws Exception {
-        List<TyPermission> menus = permissionService.selectMenuByUser(user.getId());
-//        for (TyPermission menu : menus) {
-//            TyMenu tyMenu = new TyMenu();
-//        }
-
-    }
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public TyResponse modify(@RequestBody TyUser userInfo){
         if(userService.modify(userInfo)){

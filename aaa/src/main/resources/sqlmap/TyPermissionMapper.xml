@@ -41,11 +41,13 @@
     <select id="selectPermByUser" resultMap="permTree">
       <include refid="selectPerm"/>
       AND parent_id is NULL
+      ORDER by tp.order asc
     </select>
     
     <select id="selectPermChildById" resultMap="permTree">
         <include refid="selectPerm"/>
         AND parent_id = #{id}
+        ORDER by tp.order asc
     </select>
 
     <!--<select id="selectPermByUser" parameterType="com.taoyuan.framework.common.entity.TyUser" resultType="com.taoyuan.framework.common.entity.TyPermission">-->
