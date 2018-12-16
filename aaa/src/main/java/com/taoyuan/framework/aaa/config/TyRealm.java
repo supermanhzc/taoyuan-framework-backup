@@ -41,7 +41,7 @@ public class TyRealm extends AuthorizingRealm {
             for (TyRole role : roles) {
                 authorizationInfo.addRole(role.getName());
             }
-            List<TyPermission> TyPermissions = permissionService.selectPermByUser(userInfo);
+            List<TyPermission> TyPermissions = permissionService.selectPermByUser(userInfo.getId());
             for (TyPermission perm : TyPermissions) {
                 authorizationInfo.addStringPermission(perm.getPermission());
             }

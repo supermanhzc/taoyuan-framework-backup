@@ -2,6 +2,7 @@ package com.taoyuan.framework.aaa.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.taoyuan.framework.aaa.entity.TyMenu;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
 import com.taoyuan.framework.aaa.service.TyUserService;
@@ -74,8 +75,8 @@ public class TyAuthController {
                 TyUser tyUser = new TyUser();
                 tyUser.setId(currentUser.getUserId());
                 roles = roleService.selectRoleByUser(tyUser);
-                List<TyPermission> permissions = permissionService.selectPermByUser(tyUser);
-                List<TyPermission> menus = permissionService.selectMenuByUser(tyUser);
+                List<TyPermission> permissions = permissionService.selectPermByUser(currentUser.getUserId());
+                List<TyPermission> menus = permissionService.selectMenuByUser(currentUser.getUserId());
                 currentUser.setRoles(roles);
                 currentUser.setPermissions(permissions);
                 currentUser.setMenus(menus);
@@ -100,8 +101,8 @@ public class TyAuthController {
             TyUser user = userService.getOne(new QueryWrapper<TyUser>().eq("username", userInfo.getUserName()));
 
             List<TyRole> roles = roleService.selectRoleByUser(user);
-            List<TyPermission> permissions = permissionService.selectPermByUser(user);
-            List<TyPermission> menus = permissionService.selectMenuByUser(user);
+            List<TyPermission> permissions = permissionService.selectPermByUser(user.getId());
+            List<TyPermission> menus = permissionService.selectMenuByUser(user.getId());
             TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions, menus);
             subject.getSession().setAttribute(sessionId, fullUser);
             return new TySuccessResponse(fullUser);
@@ -115,7 +116,10 @@ public class TyAuthController {
     }
 
     private void getMenus(TyUser user) throws Exception {
-        List<TyPermission> menus = permissionService.selectMenuByUser(user);
+        List<TyPermission> menus = permissionService.selectMenuByUser(user.getId());
+//        for (TyPermission menu : menus) {
+//            TyMenu tyMenu = new TyMenu();
+//        }
 
     }
     @RequestMapping(value = "/modify", method = RequestMethod.POST)

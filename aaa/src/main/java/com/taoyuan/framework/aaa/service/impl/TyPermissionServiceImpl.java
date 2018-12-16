@@ -12,12 +12,12 @@ import java.util.List;
 @Service
 public class TyPermissionServiceImpl extends ServiceImpl<TyPermissionMapper, TyPermission> implements TyPermissionService {
     @Override
-    public List<TyPermission> selectPermByUser(TyUser tyUser) throws Exception {
-        return baseMapper.selectPermByUser(tyUser);
+    public List<TyPermission> selectPermByUser(Long userId) throws Exception {
+        return baseMapper.selectPermByUser(userId, "action");
     }
 
     @Override
-    public List<TyPermission> selectMenuByUser(TyUser tyUser) throws Exception {
-        return baseMapper.selectMenuByUser(tyUser);
+    public List<TyPermission> selectMenuByUser(Long userId) throws Exception {
+        return baseMapper.selectPermByUser(userId, "menu");
     }
 }
