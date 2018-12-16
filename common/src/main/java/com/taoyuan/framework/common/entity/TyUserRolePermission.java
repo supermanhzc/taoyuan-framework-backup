@@ -8,6 +8,8 @@ import java.util.List;
 @Data
 public class TyUserRolePermission extends TyBaseEntity{
 
+
+    private static final long serialVersionUID = -6195370809717284401L;
     private String sessionId;
     private Long userId;
     private String userName;

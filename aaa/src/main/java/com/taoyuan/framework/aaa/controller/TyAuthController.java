@@ -51,6 +51,18 @@ public class TyAuthController {
         throw TyExceptionUtil.buildException(ResultCode.USER_REGISTRY_ERROR);
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @OperControllerLog(type = "用户退出登录", module = "AAA")
+    public TyResponse logout() {
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.logout();
+            return new TySuccessResponse("user logout successfully.");
+        }catch (Exception e){
+            throw TyExceptionUtil.buildException(ResultCode.USER_LOGOUT_ERROR);
+        }
+    }
+
     @RequestMapping(value = "/users/info", method = RequestMethod.GET)
     @OperControllerLog(type = "查询用户信息", module = "AAA")
     public TyResponse<TyUserRolePermission> getUserInfo() {
