@@ -83,5 +83,4 @@ public class TyDateUtils {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         return sdf.format(date);
     }
-
 }
