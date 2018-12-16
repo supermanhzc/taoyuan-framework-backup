@@ -2,6 +2,7 @@ package com.taoyuan.framework.aaa.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.taoyuan.framework.aaa.entity.TyMenu;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
 import com.taoyuan.framework.aaa.service.TyUserService;
@@ -51,6 +52,42 @@ public class TyAuthController {
         throw TyExceptionUtil.buildException(ResultCode.USER_REGISTRY_ERROR);
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @OperControllerLog(type = "用户退出登录", module = "AAA")
+    public TyResponse logout() {
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.logout();
+            return new TySuccessResponse("user logout successfully.");
+        }catch (Exception e){
+            throw TyExceptionUtil.buildException(ResultCode.USER_LOGOUT_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/users/info", method = RequestMethod.GET)
+    @OperControllerLog(type = "查询用户信息", module = "AAA")
+    public TyResponse<TyUserRolePermission> getUserInfo() {
+        Subject subject = SecurityUtils.getSubject();
+        TyUserRolePermission currentUser = TySession.getCurrentUser();
+        if(null != currentUser){
+            List<TyRole> roles = null;
+            try {
+                TyUser tyUser = new TyUser();
+                tyUser.setId(currentUser.getUserId());
+                roles = roleService.selectRoleByUser(tyUser);
+                List<TyPermission> permissions = permissionService.selectPermByUser(currentUser.getUserId());
+                List<TyPermission> menus = permissionService.selectMenuByUser(currentUser.getUserId());
+                currentUser.setRoles(roles);
+                currentUser.setPermissions(permissions);
+                currentUser.setMenus(menus);
+                subject.getSession().setAttribute(subject.getSession().getId().toString(), currentUser);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new TySuccessResponse<>(currentUser);
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @OperControllerLog(type = "用户登录", module = "AAA")
     public TyResponse<TyUserRolePermission> login(@RequestBody TyUser userInfo) {
@@ -64,9 +101,9 @@ public class TyAuthController {
             TyUser user = userService.getOne(new QueryWrapper<TyUser>().eq("username", userInfo.getUserName()));
 
             List<TyRole> roles = roleService.selectRoleByUser(user);
-            List<TyPermission> permissions = permissionService.selectPermByUser(user);
-
-            TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions);
+            List<TyPermission> permissions = permissionService.selectPermByUser(user.getId());
+            List<TyPermission> menus = permissionService.selectMenuByUser(user.getId());
+            TyUserRolePermission fullUser = new TyUserRolePermission(sessionId, user, roles, permissions, menus);
             subject.getSession().setAttribute(sessionId, fullUser);
             return new TySuccessResponse(fullUser);
         } catch (LockedAccountException e) {
