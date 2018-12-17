@@ -7,5 +7,6 @@ import com.taoyuan.framework.common.entity.TyUser;
 import java.util.List;
 
 public interface TyPermissionService extends IService<TyPermission> {
-    List<TyPermission> selectPermByUser(TyUser tyUser) throws Exception;
+    List<TyPermission> selectPermByUser(Long userId) throws Exception;
+    List<TyPermission> selectMenuByUser(Long userId) throws Exception;
 }
