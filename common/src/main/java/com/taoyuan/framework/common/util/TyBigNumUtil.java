@@ -15,6 +15,10 @@ public class TyBigNumUtil {
      * @return
      */
     public static String cvrtNum2String(Object value) {
+        if(null== value){
+            return null;
+        }
+
         DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance();
         decimalFormat.setMaximumFractionDigits(2);
         decimalFormat.setMinimumFractionDigits(2);
