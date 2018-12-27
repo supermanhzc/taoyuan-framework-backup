@@ -6,6 +6,7 @@ import java.lang.annotation.*;
 @Target(value = {ElementType.METHOD})
 @Documented
 public @interface OperControllerLog {
+    String key() default "";
     String module() default "";
     String type() default "";
 }
