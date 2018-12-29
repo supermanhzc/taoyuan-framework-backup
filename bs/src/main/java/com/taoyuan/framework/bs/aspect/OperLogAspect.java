@@ -118,6 +118,7 @@ public class OperLogAspect {
                 Class[] clazzs = method.getParameterTypes();
                 if (clazzs.length == args.length){
                     OperControllerLog operControllerLog = method.getAnnotation(OperControllerLog.class);
+                    tyOperLog.setLogKey(operControllerLog.key());
                     tyOperLog.setModule(operControllerLog.module());
                     tyOperLog.setType(operControllerLog.type());
                     break;

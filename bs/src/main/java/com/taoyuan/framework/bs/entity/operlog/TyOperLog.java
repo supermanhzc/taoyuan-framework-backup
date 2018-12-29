@@ -21,6 +21,8 @@ public class TyOperLog extends TyBaseEntity {
     private String ip;
     @TableField(value = "user_id")
     private Long userId;
+    @TableField(value = "log_key")
+    private String logKey;
     private String module;
     private String type;
     private String request;

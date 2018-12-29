@@ -2,12 +2,12 @@ package com.taoyuan.framework.aaa.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.taoyuan.framework.aaa.entity.TyMenu;
 import com.taoyuan.framework.aaa.service.TyPermissionService;
 import com.taoyuan.framework.aaa.service.TyRoleService;
 import com.taoyuan.framework.aaa.service.TyUserService;
 import com.taoyuan.framework.bs.aspect.OperControllerLog;
 import com.taoyuan.framework.common.constant.ResultCode;
+import com.taoyuan.framework.common.constant.TyOperLogKeyConsts;
 import com.taoyuan.framework.common.entity.TyPermission;
 import com.taoyuan.framework.common.entity.TyRole;
 import com.taoyuan.framework.common.entity.TyUser;
@@ -53,7 +53,7 @@ public class TyAuthController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    @OperControllerLog(type = "用户退出登录", module = "AAA")
+    @OperControllerLog(key = TyOperLogKeyConsts.TY_LOGOUT_KEY, type = "用户退出登录", module = "AAA")
     public TyResponse logout() {
         Subject subject = SecurityUtils.getSubject();
         try {
@@ -89,7 +89,7 @@ public class TyAuthController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    @OperControllerLog(type = "用户登录", module = "AAA")
+    @OperControllerLog(key = TyOperLogKeyConsts.TY_LOGIN_KEY, type = "用户登录", module = "AAA")
     public TyResponse<TyUserRolePermission> login(@RequestBody TyUser userInfo) {
         JSONObject jsonObject = new JSONObject();
         Subject subject = SecurityUtils.getSubject();
@@ -139,39 +139,5 @@ public class TyAuthController {
         }else{
             throw TyExceptionUtil.buildException(ResultCode.USER_NOT_LOGGED_IN);
         }
-
-
     }
-//    private int getUseerType(TyRole role) {
-//        String name = role.getName();
-//        if ("超级管理员".equals(name)) {
-//            return 1;
-//        } else if ("网站管理员".equals(name)) {
-//            return 2;
-//        } else if ("代理会员".equals(name)) {
-//            return 3;
-//        } else if ("钻石会员".equals(name)) {
-//            return 4;
-//        } else if ("普通会员".equals(name)) {
-//            return 5;
-//        }
-//
-//        return 0;
-//    }
-//
-//    //只记录代理的操作日志，其他不记录
-//    private void saveOperation(int type, String ip) {
-//        if (2 == type) {
-//            TyProxyOperation oper = new TyProxyOperation();
-//            //TODO真实数据，暂时写0
-//            oper.setAccount(BigDecimal.ZERO);
-//            oper.setDescription("登录");
-//            oper.setType(4);
-//            oper.setMoneyChanged(BigDecimal.ZERO);
-//            oper.setProxyId(TySession.getCurrentUser().getUserId());
-//            oper.setProxyName(TySession.getCurrentUser().getName());
-//            oper.setDescription(ip);
-//            proxyOperService.save(oper);
-//        }
-//    }
 }
